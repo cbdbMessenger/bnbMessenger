@@ -10,5 +10,5 @@
 
 # But not these files...
 !.gitignore
-!/app
+!/app/src
 
