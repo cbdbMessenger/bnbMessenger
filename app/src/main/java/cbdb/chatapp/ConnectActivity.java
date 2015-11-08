@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +22,12 @@ import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ConnectActivity extends Activity {
@@ -32,7 +39,10 @@ public class ConnectActivity extends Activity {
     private IntentFilter intentFilter;
     private Channel channel;
 
+    private List peers;
 
+    public static final File directory = new File("/sdcard/ChatAppTemp");
+    public static File outFile = new File(directory, "DeviceList");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +104,13 @@ public class ConnectActivity extends Activity {
                         // No services have actually been discovered yet, so this method
                         // can often be left blank.  Code for peer discovery goes in the
                         // onReceive method, detailed below.
-                        showToast("Success");
                     }
 
                     @Override
                     public void onFailure(int reasonCode) {
                         // Code for when the discovery initiation fails goes here.
                         // Alert the user that something went wrong.
-                        showToast("Failure");
+                        showToast("Failed to begin peer discovery.");
                     }
                 });
 
@@ -137,12 +146,15 @@ public class ConnectActivity extends Activity {
                 // Check to see if Wi-Fi is enabled and notify appropriate activity
                 int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
                 if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
-                    // Wifi P2P is enabled
+                    showToast("wifi p2p enabled");
                 } else {
-                    // Wi-Fi P2P is not enabled
+                    showToast("wifi p2p disabled");
                 }
             } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
                 // Call WifiP2pManager.requestPeers() to get a list of current peers
+                if(wifiP2pManager != null) {
+                    wifiP2pManager.requestPeers(channel, peerListListener);
+                }
             } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
                 // Respond to new connection or disconnections
             } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
@@ -151,4 +163,38 @@ public class ConnectActivity extends Activity {
 
         }
     };
+
+    private WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
+        @Override
+        public void onPeersAvailable(WifiP2pDeviceList peerList) {
+
+            peers = new ArrayList();
+
+            // Out with the old, in with the new.
+            peers.clear();
+            peers.addAll(peerList.getDeviceList());
+
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            // BEGIN TEMPORARY -- to view connected devices
+            FileOutputStream fos;
+
+            try {
+                fos = new FileOutputStream(outFile);
+                for(int i=0 ; i<peers.size() ; i++) {
+                    fos.write((Integer.toString(i+1) + ": " + peers.get(i).toString() + "\n\n\n").getBytes());
+                }
+                fos.close();
+            } catch (FileNotFoundException e) {
+                showToast("File Not Found Exception");
+            } catch (IOException e) {
+                showToast("IO Exception");
+            }
+            // END TEMPORARY -- to view connected devices
+
+        }
+    };
+
 }

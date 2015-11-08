@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">ChatApp</string>
-    <string name="title_activity_connect">ConnectActivity</string>
+    <string name="title_activity_connect">ChatApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
