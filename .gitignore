@@ -10,5 +10,8 @@
 
 # But not these files...
 !.gitignore
+!/app
+/app/*
 !/app/src
-
+app/build.gradle
+app/app.iml
