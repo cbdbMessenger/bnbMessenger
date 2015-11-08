@@ -1,5 +1,14 @@
-CMakeCache.txt
-CMakeFiles
-Makefile
-cmake_install.cmake
-install_manifest.txt
+# .gradle
+# /local.properties
+# /.idea/workspace.xml
+# /.idea/libraries
+# .DS_Store
+# /build
+
+# Ignore everything
+/*
+
+# But not these files...
+!.gitignore
+!/app
+
