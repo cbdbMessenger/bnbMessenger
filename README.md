@@ -1,5 +1,0 @@
-# bnbMessenger
-Chat app
-
-
-test
