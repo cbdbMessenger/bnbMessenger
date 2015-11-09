@@ -40,7 +40,7 @@ import java.util.Random;
 public class ConnectActivity extends Activity {
 
     public static final String SERVICE_TYPE = "_http._tcp.";
-    Button toggle, search, connect;
+    Button toggle, search, connect, chat;
 
     private WifiManager wifiManager;
     private WifiP2pManager wifiP2pManager;
@@ -137,8 +137,16 @@ public class ConnectActivity extends Activity {
             }
         });
 
-        toggle = (Button) findViewById(R.id.btnConnect);
-        toggle.setOnClickListener(new View.OnClickListener() {
+        chat = (Button) findViewById(R.id.btnChatActivity);
+        chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startChatActivity();
+            }
+        });
+
+        connect = (Button) findViewById(R.id.btnConnect);
+        connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean isHost = true;
@@ -157,14 +165,15 @@ public class ConnectActivity extends Activity {
                     nsdManager.discoverServices(
                             SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener);
                 }
-
             }
-
-            ;
-
         });
+
     }
 
+    private void startChatActivity() {
+        Intent intent = new Intent(this, ChatActivity.class);
+        startActivity(intent);
+    }
 
     private void intentFilterSetup() {
         intentFilter = new IntentFilter();
