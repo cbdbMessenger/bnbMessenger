@@ -32,7 +32,7 @@ import java.util.List;
 
 public class ConnectActivity extends Activity {
 
-    Button toggle, search, connect;
+    Button toggle, search, connect, chat;
 
     private WifiManager wifiManager;
     private WifiP2pManager wifiP2pManager;
@@ -117,6 +117,19 @@ public class ConnectActivity extends Activity {
             }
         });
 
+        chat = (Button)findViewById(R.id.btnChatActivity);
+        chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startChatActivity();
+            }
+        });
+
+    }
+
+    private void startChatActivity() {
+        Intent intent = new Intent(this, ChatActivity.class);
+        startActivity(intent);
     }
 
     private void intentFilterSetup() {
