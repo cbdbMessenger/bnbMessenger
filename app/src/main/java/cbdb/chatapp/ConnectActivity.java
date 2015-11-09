@@ -260,7 +260,7 @@ public class ConnectActivity extends Activity {
         serviceInfo.setPort(port);
 
         //TODO;  FIX THIS LINE
-        nsdManager = (NsdManager)bnbMessenger.getSystemService(Context.NSD_SERVICE);
+    //    nsdManager = (NsdManager)bnbMessenger.getSystemService(Context.NSD_SERVICE);
 
         nsdManager.registerService(
                 serviceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener);
