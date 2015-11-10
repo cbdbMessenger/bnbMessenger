@@ -115,6 +115,9 @@ public class ConnectActivity extends Activity {
             @Override
             public void onClick(View v) {
 
+                nsdManager = (NsdManager) getApplicationContext().getSystemService(Context.NSD_SERVICE);
+                nsdManager.discoverServices(
+                        SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener);
 
                 wifiP2pManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
 
@@ -149,6 +152,8 @@ public class ConnectActivity extends Activity {
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                nsdManager = (NsdManager) getApplicationContext().getSystemService(Context.NSD_SERVICE);
+
                 boolean isHost = true;
                 if (isHost) {
                     try {
@@ -268,8 +273,7 @@ public class ConnectActivity extends Activity {
         serviceInfo.setServiceType(SERVICE_TYPE);
         serviceInfo.setPort(port);
 
-        //TODO;  FIX THIS LINE
-        nsdManager = (NsdManager) getApplicationContext().getSystemService(Context.NSD_SERVICE);
+//        nsdManager = (NsdManager) getApplicationContext().getSystemService(Context.NSD_SERVICE);
 
         nsdManager.registerService(
                 serviceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener);
