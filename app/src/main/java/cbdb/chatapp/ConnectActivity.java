@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -53,6 +54,7 @@ public class ConnectActivity extends Activity {
     private NsdServiceInfo mService;
     private ServerSocket socket;
     private String serviceName;
+    private String macAddress;
     private NsdManager.RegistrationListener registrationListener;
     private NsdManager.DiscoveryListener discoveryListener;
     private NsdManager.ResolveListener resolveListener;
@@ -192,7 +194,13 @@ public class ConnectActivity extends Activity {
     private void wifiSetup() {
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         wifiP2pManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+
+        WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+        macAddress = connectionInfo.getMacAddress().substring(9).replace(":","");
+
         channel = wifiP2pManager.initialize(this, getMainLooper(), null);
+
+
     }
 
     private void showToast(CharSequence sequence) {
@@ -269,7 +277,7 @@ public class ConnectActivity extends Activity {
 
         // The name is subject to change based on conflicts
         // with other services advertised on the same network.
-        serviceInfo.setServiceName("bnbChat");
+        serviceInfo.setServiceName("bnbChat"+macAddress);
         serviceInfo.setServiceType(SERVICE_TYPE);
         serviceInfo.setPort(port);
 
@@ -330,12 +338,13 @@ public class ConnectActivity extends Activity {
                 if (!service.getServiceType().equals(SERVICE_TYPE)) {
                     // Service type is the string containing the protocol and
                     // transport layer for this service.
-                    System.out.println( "unknown service sype: " + service.getServiceType());
+                    System.out.println( "unknown service type: " + service.getServiceType());
                 } else if (service.getServiceName().equals(serviceName)) {
                     // The name of the service tells the user what they'd be
                     // connecting to. It could be "Bob's Chat App".
                     System.out.println("same machine: " + serviceName);
-                } else if (service.getServiceName().contains("NsdChat")){
+                } else if (service.getServiceName().contains("bnbChat") && !service.getServiceName().equals(serviceName)){
+                    System.out.println("found another bnbChat service: "+service.getServiceName());
                     nsdManager.resolveService(service, resolveListener);
                 }
             }
