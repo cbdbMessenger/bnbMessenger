@@ -76,6 +76,40 @@ public class ConnectActivity extends Activity {
         initializeResolveListener();
     }
 
+    @Override
+    protected void onPause() {
+        if (nsdManager != null) {
+            tearDown();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (nsdManager != null) {
+            //TODO: restart service unconditionally?
+            registerService(socket.getLocalPort());
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        tearDown();
+        super.onDestroy();
+    }
+
+    // NsdHelper's tearDown method
+    public void tearDown() {
+        try {
+            nsdManager.unregisterService(registrationListener);
+            nsdManager.stopServiceDiscovery(discoveryListener);
+        } finally {
+        }
+        registrationListener = null;
+        discoveryListener = null;
+    }
+
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
@@ -343,9 +377,16 @@ public class ConnectActivity extends Activity {
                     // The name of the service tells the user what they'd be
                     // connecting to. It could be "Bob's Chat App".
                     System.out.println("same machine: " + serviceName);
-                } else if (service.getServiceName().contains("bnbChat") && !service.getServiceName().equals(serviceName)){
+                } else if (service.getServiceName().contains("bnbChat") && !service.getServiceName().equals(serviceName) && service.getServiceType().equals(SERVICE_TYPE)){
                     System.out.println("found another bnbChat service: "+service.getServiceName());
                     nsdManager.resolveService(service, resolveListener);
+
+
+
+
+
+
+
                 }
             }
 
@@ -353,7 +394,7 @@ public class ConnectActivity extends Activity {
             public void onServiceLost(NsdServiceInfo service) {
                 // When the network service is no longer available.
                 // Internal bookkeeping code goes here.
-                System.out.println( "service lost" + service);
+                System.out.println( "service lost " + service);
             }
 
             @Override
@@ -381,7 +422,7 @@ public class ConnectActivity extends Activity {
             @Override
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
                 // Called when the resolve fails.  Use the error code to debug.
-                System.out.println("Resolve failed" + errorCode);
+                System.out.println("Resolve failed " + errorCode);
             }
 
             @Override
@@ -395,8 +436,13 @@ public class ConnectActivity extends Activity {
                 mService = serviceInfo;
                 int port = mService.getPort();
                 InetAddress host = mService.getHost();
+
+
+                // TODO: Start networking and chat app code here
+
             }
         };
     }
+
 
 }
